@@ -23,4 +23,6 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-send_file = "main.file_sender_client.client:run"
+upload_file = "file_sender_client.client:upload_file"
+download_file = "file_sender_client.client:download_file"
+delete_file = "file_sender_client.client:delete_file"
