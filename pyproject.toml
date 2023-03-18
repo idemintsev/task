@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "main"
+version = "0.0.1"
+description = ""
+authors = ["Ilia Demintsev <idemintsev@gmail.com>"]
+readme = "README.md"
+packages = [{include = "main"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+flask = "2.2.3"
+flask-script = "2.0.*"
+flask-httpauth = "4.7.*"
+
+attrs = "22.2.*"
+
+[tool.poetry.group.dev.dependencies]
+honcho = "1.1.*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+send_file = "main.file_sender_client.client:run"
