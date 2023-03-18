@@ -4,6 +4,10 @@ from pathlib import Path
 from attr import define, field
 
 
+Bytes = int
+TWO_Mb = 2 * 1024 * 1024
+
+
 @define(auto_attribs=True, slots=True)
 class FileSenderClientConfig:
     host: str = os.getenv('APP_HOST', '127.0.0.1')
@@ -25,11 +29,13 @@ class AppConfig:
     HOST: str = os.getenv('APP_HOST', '127.0.0.1')
     PORT: int = int(os.getenv('APP_PORT', 5000))
     DEBUG: bool = bool(int(os.getenv('DEBUG_MODE', 0)))
+    LOG_LEVEL: str = os.getenv('LOG_LEVEL', 'ERROR').upper()
     SECRET_KEY: str = os.getenv('SECRET_KEY', 'secret_key')
     BASEDIR: Path = Path(__file__).absolute().parent
     STORE_FOLDER_NAME: str = os.getenv('STORE_FOLDER_NAME', 'store')
     FILE_SENDER_CLIENT: FileSenderClientConfig = FileSenderClientConfig()
     SERVER_NAME: str = field(default=None)
+    CHUNK_SIZE: Bytes = int(os.getenv('CHUNK_SIZE', TWO_Mb))
 
     def __attrs_post_init__(self):
         self.SERVER_NAME = f'{self.HOST}:{self.PORT}'
