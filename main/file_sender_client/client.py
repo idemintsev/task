@@ -11,6 +11,7 @@ from pathlib import Path
 from attrs import frozen, field
 from typing import Generator
 from requests.auth import HTTPBasicAuth
+from requests.exceptions import BaseHTTPError, RequestException, CompatJSONDecodeError
 
 from main.settings import Config
 
@@ -32,8 +33,11 @@ class FileSenderClient:
                 yield data
 
     def send_file(self):
-        res = requests.post(f'{self.url}/files', data=self._read_by_chunks(), auth=HTTPBasicAuth('user', 'password'))
-        print(res.status_code, res.json())
+        try:
+            res = requests.post(f'{self.url}/files', data=self._read_by_chunks(), auth=HTTPBasicAuth('user', 'password'))
+            print(res.status_code, res.json())
+        except (BaseHTTPError, RequestException, CompatJSONDecodeError) as exc:
+            print(exc)
 
 
 def run():
