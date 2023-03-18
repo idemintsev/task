@@ -1,5 +1,6 @@
-from main.views import FilesLoaderView
+from main.views import FileUploadView, FileDownloadView
 
 urls_rules = [
-    {'rule': '/files', 'view_func': FilesLoaderView.as_view('files_loader_view'), 'methods': ['POST']},
+    {'rule': '/files', 'view_func': FileUploadView.as_view('file_download_view'), 'methods': ['POST']},
+    {'rule': '/files/<id>', 'view_func': FileDownloadView.as_view('file_upload_view'), 'methods': ['GET', 'DELETE']},
 ]
