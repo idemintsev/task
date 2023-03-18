@@ -23,7 +23,9 @@ class FileUploadView(MethodView):
         username = request.authorization.get('username')
         logger.debug(f'FileDownloadView. Username: {username}')
         try:
-            with FileContextManager(temp_file=f"{Path.joinpath(Config.upload_folder, 'tmp')}") as f_manager:
+            with FileContextManager(
+                    temp_file=f"{Path.joinpath(Config.upload_folder, 'tmp')}", username=username
+            ) as f_manager:
                 while True:
                     chunk = request.stream.read(Config.CHUNK_SIZE)
                     if not chunk:
@@ -44,21 +46,27 @@ class FileDownloadView(MethodView):
     def get(self, id: str) -> Response:
         """"""
         username = request.authorization.get('username')
-        path_to_file = Path.joinpath(Config.upload_folder, id[0:2], id)
+        path_to_file = Path.joinpath(Config.upload_folder, id[0:2], f'{id}')
         logger.debug(f'FileUploadView. Username: {username}')
         logger.debug(f'FileUploadView. Path_to_file: {path_to_file}')
-        if path_to_file.is_file():
-            return Response(
-                stream_with_context(self._read_file_by_chunks(path_to_file)),
-                content_type='application/octet-stream',
-            )
+
+        if path_to_file.parent.is_dir():
+            files = [f for f in path_to_file.parent.iterdir() if f.is_file()]
+            file = [f for f in files if f.name.startswith(id)]
+            if file:
+                return Response(
+                    stream_with_context(self._read_file_by_chunks(*file)),
+                    content_type='application/octet-stream',
+                )
         return make_response({'filename': 'notfound'}, 404)
 
     def delete(self, id: str) -> Response:
         username = request.authorization.get('username')
-        path_to_file = Path.joinpath(Config.upload_folder, id[0:2], id)
+        path_to_file = Path.joinpath(Config.upload_folder, id[0:2], f'{id}.{username}')
         logger.debug(f'FileUploadView. Username: {username}')
         logger.debug(f'FileUploadView. Path_to_file: {path_to_file}')
+        if not path_to_file.is_file():
+            return make_response({'filename': 'file not found'}, 404)
         try:
             files_quantity = sum(1 for f in path_to_file.parent.iterdir() if f.is_file())
             if files_quantity > 1:

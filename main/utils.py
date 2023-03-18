@@ -16,6 +16,7 @@ from main.settings import Config
 class FileContextManager:
     path: Path = Config.upload_folder
     mode: str = 'ab'
+    username: str = field(default=None)  # type: ignore
     temp_file: '_TemporaryFileWrapper' = field(default=None)  # type: ignore
     filename: str = field(default=None)  # type: ignore
     hash_object: '_Hash' = field(default=None)  # type: ignore
@@ -38,6 +39,6 @@ class FileContextManager:
             self.filename = self.hash_object.hexdigest()
             path = Path.joinpath(Config.upload_folder, self.filename[0:2])
             path.mkdir(parents=True, exist_ok=True)
-            os.replace(self.temp_file.name, self.full_path_to_creating_file)
+            os.replace(self.temp_file.name, f'{self.full_path_to_creating_file}.{self.username}')
         else:
             os.unlink(self.temp_file.name)
