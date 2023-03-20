@@ -64,9 +64,10 @@ class FileSenderClient:
                 auth=HTTPBasicAuth('user', 'password'),
             )
             logger.debug(f'{res.status_code}, {res.json()}')
+            path_to_file = Path.joinpath(Path(__file__).parent, 'downloaded_from_server.jpg')
+            path_to_file.unlink(missing_ok=True)
         except (BaseHTTPError, RequestException, CompatJSONDecodeError) as exc:
             logger.exception(f'{exc.__class__.__name__}. {str(exc)}')
-
 
 
 def upload_file():
